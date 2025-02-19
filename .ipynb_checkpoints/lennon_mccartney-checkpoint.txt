@@ -1,0 +1,143 @@
+paul,0,love me do
+paul,1,ps i love you
+no,2,please please me
+no,3,ask me why
+no,4,there´s a place
+paul,5,i saw her standing there
+no,6,do you want to know a secret
+paul,14,hold me tight
+no,15,it won´t be long
+paul,16,all my loving
+no,19,all i´ve got to do
+no,20,not a second time
+no,29,i call your name
+paul,32,can´t buy me love
+no,33,you can´t do that
+paul,34,and i love her
+no,35,i should have known better
+no,36,tell me why
+no,37,if i fell
+no,38,i´m happy just to dance with you
+no,39,a hard day´s night
+no,40,i´ll cry instead
+no,41,i´ll be back
+no,42,any time at all
+paul,43,things we said today
+no,44,when i get home
+no,46,i´m a loser
+paul,47,every little thing
+no,48,i don´t want to spoil the party
+paul,49,what you´re doing
+no,50,no reply
+paul,51,eight days a week
+paul,52,i´ll follow the su
+no,59,ticket to ride
+paul,60,another girl
+paul,62,the night before
+no,64,you´ve got to hide your love away
+paul,65,tell me what you see
+no,66,you´re going to lose that girl
+no,67
+paul,68,i´ve just seen a face
+paul,69
+no,70,it´s only love
+no,74,run for your life
+no,75,norwegian wood (this bird has flown)
+paul,76,drive my car
+no,79,nowhere ma
+paul,80,i´m looking through you
+paul,81
+paul,85,you won´t see me
+no,86
+no,87,tomorrow never knows
+paul,88,got to get you into my life
+no,90,doctor robert
+no,91,and your bird can sing
+no,93,i´m only sleeping
+paul,94,eleanor rigby
+paul,95,for no one
+paul,96,yellow submarine
+paul,98,good day sunshine
+paul,99,here  there and everywhere
+no,100,she said she said
+paul,101,when i´m
+paul,103,sgt pepper´s lonely hearts club band
+no,104,good morning good morning
+paul,105,fixing a hole
+no,106,being for the benefit of mr kite
+paul,107,lovely rita
+no,108,lucy in the sky with diamonds
+paul,109,getting better
+paul,111,she´s leaving home
+paul,112,with a little help from my friends
+paul,113,sgt pepper´s lonely hearts club band (reprise)
+paul,114,magical mystery tour
+paul,115,your mother should know
+paul,118,the fool on the hill
+no,119,i am the walrus
+no,120
+no,122
+paul,123
+no,124,everybody´s got something to hide except me and my monkey
+no,125,good night
+paul,126,ob-la-di  ob-la-da
+no,127,cry baby cry
+paul,128,helter skelter
+no,129,sexy sadie
+paul,131,mother nature´s so
+no,132,yer blues
+paul,133,rocky raccoo
+paul,134,wild honey pie
+paul,135,back in the ussr
+no,136,dear prudence
+no,137,glass onio
+paul,138,i will
+paul,139
+no,141,happiness is a warm gu
+paul,142,honey pie
+paul,144,martha my dear
+no,146,i´m so tired
+no,147,the continuing story of bungalow bill
+paul,148,why don´t we do it in the road?
+no,149
+paul,150,yellow submarine
+paul,152,all together now
+no,154,all you need is love
+no,156,i want you (she´s so heavy)
+paul,158,oh! darling
+paul,160,you never give me your money
+paul,161,her majesty
+paul,162,golden slumbers
+paul,163,carry that weight
+paul,165,maxwell´s silver hammer
+no,166,come together
+paul,167,the end
+no,168,sun king
+no,169,mean mr mustard
+no,170,polythene pam
+paul,171,she came in through the bathroom window
+no,172
+no,173,across the universe
+no,174,dig a ponny
+paul,176,get back
+paul,177,two of us
+no,179,dig it
+paul,181,let it be
+paul,182,the long and winding road
+no,183,one after
+no,190,this boy
+paul,191,she´s a woma
+no,192,i feel fine
+no,193,yes it is
+paul,194,i´m dow
+no,195,day tripper
+paul,197,paperback writer
+no,198
+no,199,strawberry fields forever
+paul,200,penny lane
+paul,202,hello  goodbye
+paul,204,lady madonna
+paul,205,hey jude
+no,206,don´t let me dow
+no,207,the ballad of john and yoko
+no,209,you know my name (look up the number)
