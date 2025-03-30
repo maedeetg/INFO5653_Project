@@ -1,0 +1,295 @@
+```{r}
+# Import libraries
+library(tm)
+library(stringr)
+library(wordcloud)
+library(slam)
+library(quanteda)
+library(SnowballC)
+library(arules)
+library(proxy)
+library(cluster)
+library(stringi)
+library(proxy)
+library(Matrix)
+library(tidytext) 
+library(plyr) 
+library(ggplot2)
+library(factoextra) 
+library(mclust)
+library(textstem)
+library(amap)
+library(dplyr)
+library(tcltk)
+library(fastmap)
+library(arulesViz)
+```
+
+# Song titles ARM
+### Data Prep
+```{r}
+# Read in data
+song_titles <- read.csv("lennon_mccartney.csv")
+
+# Save unlabeled data
+song_titles_unlabeled <- song_titles %>% select(Song)
+
+# Create transaction data
+transaction_file = "song_titles_transactions.csv"
+trans <- file(transaction_file)
+tokens <- tokenizers::tokenize_words(song_titles_unlabeled$Song[1], lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+
+tokens <- tokens[nchar(tokens) > 2]
+
+cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+close(trans)
+
+trans <- file(transaction_file, open = 'a')
+for (i in 2:nrow(song_titles_unlabeled))
+{
+  tokens <- tokenizers::tokenize_words(song_titles_unlabeled$Song[i], lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+  
+  tokens <- tokens[nchar(tokens) > 2]
+  
+  cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+}
+close(trans)
+```
+
+### Perform ARM!
+```{r}
+
+song_titles_trans <- read.transactions(transaction_file,
+                                  rm.duplicates = FALSE,
+                                  format = "basket",
+                                  sep = ",")
+
+song_titles_rules <- arules::apriori(song_titles_trans, parameter = list(support = 0.01, confidence = 0.01, minlen = 2))
+arules::inspect(song_titles_rules)
+
+
+# SUPPORT
+sorted_support <- sort(song_titles_rules, by = "support", decreasing = TRUE)
+arules::inspect(sorted_support[1:15])
+
+subrules <- head(sort(sorted_support, by="support"), 15)
+plot(subrules, method = 'graph', shading = "support", colors = c('magenta', 'pink'))
+
+# LIFT
+sorted_lift <- sort(song_titles_rules, by = "lift", decreasing = TRUE)
+arules::inspect(sorted_lift[1:15])
+
+subrules <- head(sort(sorted_lift, by="lift"), 15)
+plot(subrules, method = 'graph', shading = "lift", colors = c('magenta', 'pink'))
+
+# CONFIDENCE
+sorted_conf <- sort(song_titles_rules, by = "confidence", decreasing = TRUE)
+arules::inspect(sorted_conf[1:15])
+
+subrules <- head(sort(sorted_conf, by="confidence"), 15)
+plot(subrules, method = 'graph', shading = "confidence", colors = c('magenta', 'pink'))
+```
+
+
+# Lyrics ARM
+### Data Prep
+```{r}
+# Read in data
+lyrics <- read.csv("composer_lyrics.csv")
+
+# Save unlabeled data
+lyrics_unlabeled <- lyrics %>% select(Lyrics)
+
+# Create transaction data
+transaction_file = "lyrics_transactions.csv"
+trans <- file(transaction_file)
+tokens <- tokenizers::tokenize_words(lyrics_unlabeled$Lyrics[1], stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+
+tokens <- tokens[nchar(tokens) > 2]
+
+cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+close(trans)
+
+trans <- file(transaction_file, open = 'a')
+for (i in 2:nrow(lyrics_unlabeled))
+{
+  tokens <- tokenizers::tokenize_words(lyrics_unlabeled$Lyrics[i], stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+  
+  tokens <- tokens[nchar(tokens) > 2]
+  
+  cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+}
+close(trans)
+```
+
+
+### Perform ARM!
+```{r}
+lyrics_trans <- read.transactions(transaction_file,
+                                  rm.duplicates = FALSE,
+                                  format = "basket",
+                                  sep = ",")
+
+
+lyrics_rules <- arules::apriori(lyrics_trans, parameter = list(support = 0.02, confidence = 0.01, minlen = 2, maxlen = 10))
+arules::inspect(lyrics_rules)
+
+
+# SUPPORT
+sorted_support <- sort(lyrics_rules, by = "support", decreasing = TRUE)
+arules::inspect(sorted_support[1:15])
+
+subrules <- head(sort(sorted_support, by="support"), 15)
+plot(subrules, method = 'graph', shading = "support", colors = c('magenta', 'pink'))
+
+# LIFT
+sorted_lift <- sort(lyrics_rules, by = "lift", decreasing = TRUE)
+arules::inspect(sorted_lift[1:15])
+
+subrules <- head(sort(sorted_lift, by="lift"), 15)
+plot(subrules, method = 'graph', shading = "lift", colors = c('magenta', 'pink'))
+
+# CONFIDENCE
+sorted_conf <- sort(lyrics_rules, by = "confidence", decreasing = TRUE)
+arules::inspect(sorted_conf[1:15])
+
+subrules <- head(sort(sorted_conf, by="confidence"), 15)
+plot(subrules, method = 'graph', shading = "confidence", colors = c('magenta', 'pink'))
+```
+
+# Articles Description
+### Data Prep
+```{r}
+# Read in data
+description <- read.csv("paul_john_description.csv")
+
+# Save unlabeled data
+description_unlabeled <- description %>% select(description)
+
+# Create transaction data
+transaction_file = "description_transactions.csv"
+trans <- file(transaction_file)
+clean_description <- gsub("'", "", description_unlabeled$description[1])
+tokens <- tokenizers::tokenize_words(clean_description, stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+
+tokens <- tokens[nchar(tokens) > 2]
+
+cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+close(trans)
+
+trans <- file(transaction_file, open = 'a')
+for (i in 2:nrow(description_unlabeled))
+{
+  clean_description <- gsub("'", "", description_unlabeled$description[i])
+  tokens <- tokenizers::tokenize_words(clean_description, stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+  
+  tokens <- tokens[nchar(tokens) > 2]
+  
+  cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+}
+close(trans)
+```
+
+
+### Perform ARM!
+```{r}
+description_trans <- read.transactions(transaction_file,
+                                  rm.duplicates = FALSE,
+                                  format = "basket",
+                                  sep = ",")
+
+arules::inspect(description_trans)
+
+description_rules <- arules::apriori(description_trans, parameter = list(support = 0.01, confidence = 0.01, minlen = 2, maxlen = 5))
+arules::inspect(description_rules)
+
+
+# SUPPORT
+sorted_support <- sort(description_rules, by = "support", decreasing = TRUE)
+arules::inspect(sorted_support[1:15])
+
+subrules <- head(sort(sorted_support, by="support"), 15)
+plot(subrules, method = 'graph', shading = "support", colors = c('magenta', 'pink'))
+
+# LIFT
+sorted_lift <- sort(description_rules, by = "lift", decreasing = TRUE)
+arules::inspect(sorted_lift[1:15])
+
+subrules <- head(sort(sorted_lift, by="lift"), 15)
+plot(subrules, method = 'graph', shading = "lift", colors = c('magenta', 'pink'))
+
+# CONFIDENCE
+sorted_conf <- sort(description_rules, by = "confidence", decreasing = TRUE)
+arules::inspect(sorted_conf[1:15])
+
+subrules <- head(sort(sorted_conf, by="confidence"), 15)
+plot(subrules, method = 'graph', shading = "confidence", colors = c('magenta', 'pink'))
+```
+
+# Articles content
+### Data Prep
+```{r}
+# Read in data
+content <- read.csv("paul_john_full_text.csv")
+
+# Save unlabeled data
+content_unlabeled <- content %>% select(full_text)
+
+# Create transaction data
+transaction_file = "content_transactions.csv"
+trans <- file(transaction_file)
+clean_content <- gsub("'", "", content_unlabeled$full_text[1])
+tokens <- tokenizers::tokenize_words(clean_content, stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+
+tokens <- tokens[nchar(tokens) > 2]
+
+cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+close(trans)
+
+trans <- file(transaction_file, open = 'a')
+for (i in 2:nrow(content_unlabeled))
+{
+  clean_content <- gsub("'", "", content_unlabeled$full_text[i])
+  tokens <- tokenizers::tokenize_words(clean_content, stopwords = stopwords::stopwords("en"), lowercase = TRUE, strip_punct =  TRUE, strip_numeric = TRUE, simplify = TRUE)
+  
+  tokens <- tokens[nchar(tokens) > 2]
+  
+  cat(unlist(str_squish(tokens)), "\n", file=trans, sep = ",")
+}
+close(trans)
+```
+
+
+### Perform ARM!
+```{r}
+content_trans <- read.transactions(transaction_file,
+                                  rm.duplicates = FALSE,
+                                  format = "basket",
+                                  sep = ",")
+
+
+content_rules <- arules::apriori(content_trans, parameter = list(support = 0.1, confidence = 0.01, minlen = 2, maxlen = 3))
+arules::inspect(content_rules)
+
+
+# SUPPORT
+sorted_support <- sort(content_rules, by = "support", decreasing = TRUE)
+arules::inspect(sorted_support[1:15])
+
+subrules <- head(sort(sorted_support, by="support"), 15)
+plot(subrules, method = 'graph', shading = "support", colors = c('magenta', 'pink'))
+
+# LIFT
+sorted_lift <- sort(content_rules, by = "lift", decreasing = TRUE)
+arules::inspect(sorted_lift[1:15])
+
+subrules <- head(sort(sorted_lift, by="lift"), 15)
+plot(subrules, method = 'graph', shading = "lift", colors = c('magenta', 'pink'))
+
+# CONFIDENCE
+sorted_conf <- sort(content_rules, by = "confidence", decreasing = TRUE)
+arules::inspect(sorted_conf[1:15])
+
+subrules <- head(sort(sorted_conf, by="confidence"), 15)
+plot(subrules, method = 'graph', shading = "confidence", colors = c('magenta', 'pink'))
+```

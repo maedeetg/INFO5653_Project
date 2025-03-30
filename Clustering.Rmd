@@ -1,0 +1,500 @@
+```{r}
+# Import libraries
+library(tm)
+library(stringr)
+library(wordcloud)
+library(slam)
+library(quanteda)
+library(SnowballC)
+library(arules)
+library(proxy)
+library(cluster)
+library(stringi)
+library(proxy)
+library(Matrix)
+library(tidytext) 
+library(plyr) 
+library(ggplot2)
+library(factoextra) 
+library(mclust)
+library(textstem)
+library(amap)
+library(networkD3)
+library(dplyr)
+library(tcltk)
+library(arulesViz)
+```
+
+# Song titles
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+
+song_titles <- read.csv("lennon_mccartney_clean.csv")
+#clean_song_titles <- song_titles[rowSums(song_titles[, -1]) != 0, ]
+
+# Filter by label
+lennon <- song_titles %>% filter(LABEL == 'john')
+mccartney <- song_titles %>% filter(LABEL == 'paul')
+
+# Sample for dendrograms
+sample_lennon <- sample_n(lennon, 20)
+sample_mccartney <- sample_n(mccartney, 20)
+
+# Bind together
+sample_song_titles <- rbind(sample_lennon, sample_mccartney)
+
+# Save unlabeled data
+song_titles_unlabeled <- sample_song_titles %>% select(-LABEL)
+
+# Find distances
+dist_matrix_E <- dist(song_titles_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(song_titles_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(song_titles_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+song_titles <- read.csv("lennon_mccartney_clean.csv")
+song_titles_unlabeled <- song_titles %>% select(-LABEL)
+
+# K-means clustering
+song_titles_matrix <- data.matrix(song_titles_unlabeled)
+
+## Silhouette........................
+fviz_nbclust(song_titles_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+# for k = 2
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(song_titles_matrix, centers = 2, iter.max = 1000, nstart = 4, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, song_titles_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(song_titles_matrix, centers = 2, iter.max = 1000, nstart = 4, method = "spearman")
+fviz_cluster(My_Kmeans2, song_titles_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(song_titles_matrix, centers = 2, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, song_titles_matrix, main ="Manhattan")
+
+# for k = 2
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(song_titles_matrix, centers = 4, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, song_titles_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(song_titles_matrix, centers = 4, iter.max = 1000,method = "spearman")
+fviz_cluster(My_Kmeans2, song_titles_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(song_titles_matrix, centers = 4, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, song_titles_matrix, main ="Manhattan")
+```
+
+# Lyrics
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+lyrics <- read.csv("paul_john_lyrics_corpus_count100.csv")
+
+# Filter by label
+lennon <- lyrics %>% filter(LABEL == 'Lennon')
+mccartney <- lyrics %>% filter(LABEL == 'McCartney')
+
+# Sample for dendrograms
+sample_lennon <- sample_n(lennon, 20)
+sample_mccartney <- sample_n(mccartney, 20)
+
+# Bind together
+sample_lyrics <- rbind(sample_lennon, sample_mccartney)
+
+# Save unlabeled data
+lyrics_unlabeled <- sample_lyrics %>% select(-LABEL)
+
+# Find distances
+dist_matrix_E <- dist(lyrics_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(lyrics_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(lyrics_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+lyrics <- read.csv("paul_john_lyrics_corpus_count100.csv")
+lyrics_unlabeled <- lyrics %>% select(-LABEL)
+
+# K-means clustering
+lyrics_matrix <- data.matrix(lyrics_unlabeled)
+
+## Silhouette........................
+fviz_nbclust(lyrics_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, lyrics_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, lyrics_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, lyrics_matrix, main ="Manhattan")
+
+```
+
+# Lyrics lem
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+lyrics <- read.csv("paul_john_lyrics_corpus_lem_count100.csv")
+
+# Filter by label
+lennon <- lyrics %>% filter(Label == 'Lennon')
+mccartney <- lyrics %>% filter(Label == 'McCartney')
+
+# Sample for dendrograms
+sample_lennon <- sample_n(lennon, 20)
+sample_mccartney <- sample_n(mccartney, 20)
+
+# Bind together
+sample_lyrics <- rbind(sample_lennon, sample_mccartney)
+
+# Save unlabeled data
+lyrics_unlabeled <- sample_lyrics %>% select(-Label)
+
+# Find distances
+dist_matrix_E <- dist(lyrics_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(lyrics_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(lyrics_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+lyrics <- read.csv("paul_john_lyrics_corpus_lem_count100.csv")
+lyrics_unlabeled <- lyrics %>% select(-Label)
+
+# K-means clustering
+lyrics_matrix <- data.matrix(lyrics_unlabeled)
+
+## Silhouette........................
+fviz_nbclust(lyrics_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, lyrics_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, lyrics_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, lyrics_matrix, main ="Manhattan")
+
+```
+
+# Lyrics stem
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+lyrics <- read.csv("paul_john_lyrics_corpus_stem_count100.csv")
+
+# Filter by label
+lennon <- lyrics %>% filter(Label == 'Lennon')
+mccartney <- lyrics %>% filter(Label == 'McCartney')
+
+# Sample for dendrograms
+sample_lennon <- sample_n(lennon, 20)
+sample_mccartney <- sample_n(mccartney, 20)
+
+# Bind together
+sample_lyrics <- rbind(sample_lennon, sample_mccartney)
+
+# Save unlabeled data
+lyrics_unlabeled <- sample_lyrics %>% select(-Label)
+
+# Find distances
+dist_matrix_E <- dist(lyrics_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(lyrics_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(lyrics_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+lyrics <- read.csv("paul_john_lyrics_corpus_stem_count100.csv")
+lyrics_unlabeled <- lyrics %>% select(-Label)
+
+# K-means clustering
+lyrics_matrix <- data.matrix(lyrics_unlabeled)
+
+## Silhouette........................
+fviz_nbclust(lyrics_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, lyrics_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, lyrics_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(lyrics_matrix, centers = 2, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, lyrics_matrix, main ="Manhattan")
+
+```
+
+# News articles descriptions
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+description <- read.csv("paul_john_description_clean.csv")
+
+
+# Save unlabeled data
+description_unlabeled <- description %>% select(-Label)
+
+
+# Find distances
+dist_matrix_E <- dist(description_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(description_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(description_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+description <- read.csv("paul_john_description_clean.csv")
+description_unlabeled <- description %>% select(-Label)
+
+# K-means clustering
+description_matrix <- data.matrix(description_unlabeled)
+
+## Silhouette........................
+fviz_nbclust(description_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+# for k = 2
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(description_matrix, centers = 2, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, description_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(description_matrix, centers = 2, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, description_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(description_matrix, centers = 2, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, description_matrix, main ="Manhattan")
+
+# for k = 4
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(description_matrix, centers = 4, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, description_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(description_matrix, centers = 4, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, description_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(description_matrix, centers = 4, iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, description_matrix, main ="Manhattan")
+
+```
+
+# News articles content
+
+## Hierarchical clustering
+
+```{r}
+# Read in data
+
+# setwd("C:/Users/maede/Downloads/R/INFO5653/Project/Project/INFO5653_Project")
+full_text <- read.csv("paul_john_full_text_clean.csv")
+
+
+# Save unlabeled data
+full_text_unlabeled <- full_text %>% select(-Label)
+
+# Find distances
+dist_matrix_E <- dist(full_text_unlabeled, method="euclidean")
+
+dist_matrix_C <- dist(full_text_unlabeled, method="cosine")
+
+dist_matrix_Min_1 <- dist(full_text_unlabeled, method="manhattan", p=1)
+
+# Hierarchical Clustering, Dendrogram
+
+## Euclidean
+groups_E <- hclust(dist_matrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1, main = "Euclidean", xlim = c(0, 10))
+rect.hclust(groups_E, k=2)
+
+## Cosine
+groups_C <- hclust(dist_matrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1, main = "Cosine", xlim = c(0, 10))
+rect.hclust(groups_C, k=2)
+
+## Minkowski
+groups_Min_1 <- hclust(dist_matrix_Min_1,method="ward.D")
+plot(groups_Min_1, cex=0.9, hang=-1, main = "Manhattan", xlim = c(0, 10))
+rect.hclust(groups_Min_1, k=2)
+```
+
+## K-means clustering
+
+```{r}
+full_text <- read.csv("paul_john_full_text_clean.csv")
+full_text_unlabeled <- full_text %>% select(-Label)
+
+# K-means clustering
+full_text_matrix <- data.matrix(full_text_unlabeled)
+
+
+## Silhouette........................
+fviz_nbclust(full_text_matrix, method = "silhouette", 
+             FUN = hcut, k.max = 9)
+
+# for k = 2
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(full_text_matrix, centers = 2, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, full_text_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(full_text_matrix, centers = 2, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, full_text_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(full_text_matrix, centers = 2,iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, full_text_matrix, main ="Manhattan")
+
+# for k = 2
+## Run Kmeans...
+My_Kmeans1 <- Kmeans(full_text_matrix, centers = 5, iter.max = 1000, method = "euclidean")
+#, iter.max = 10, nstart = 1)
+fviz_cluster(My_Kmeans1, full_text_matrix, main="Euclidean")
+
+My_Kmeans2 <- Kmeans(full_text_matrix, centers = 5, iter.max = 1000, method = "spearman")
+fviz_cluster(My_Kmeans2, full_text_matrix, main = "Spearman")
+
+My_Kmeans3 <- Kmeans(full_text_matrix, centers = 5,iter.max = 1000, method = "manhattan")
+fviz_cluster(My_Kmeans3, full_text_matrix, main ="Manhattan")
+
+```
