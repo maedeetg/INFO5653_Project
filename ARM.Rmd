@@ -58,7 +58,6 @@ close(trans)
 
 ### Perform ARM!
 ```{r}
-
 song_titles_trans <- read.transactions(transaction_file,
                                   rm.duplicates = FALSE,
                                   format = "basket",
@@ -76,7 +75,7 @@ subrules <- head(sort(sorted_support, by="support"), 15)
 plot(subrules, method = 'graph', shading = "support", colors = c('magenta', 'pink'))
 
 # LIFT
-sorted_lift <- sort(song_titles_rules, by = "lift", decreasing = TRUE)
+sorted_lift <- sort(song_titles_rules, by = "lift", decreasing = TRUE) 
 arules::inspect(sorted_lift[1:15])
 
 subrules <- head(sort(sorted_lift, by="lift"), 15)
@@ -197,8 +196,6 @@ description_trans <- read.transactions(transaction_file,
                                   rm.duplicates = FALSE,
                                   format = "basket",
                                   sep = ",")
-
-arules::inspect(description_trans)
 
 description_rules <- arules::apriori(description_trans, parameter = list(support = 0.01, confidence = 0.01, minlen = 2, maxlen = 5))
 arules::inspect(description_rules)
